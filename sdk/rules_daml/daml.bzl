@@ -146,8 +146,9 @@ def _daml_build_impl(ctx):
             # Having to produce all the daml.yaml files via a genrule is annoying
             # so we allow hardcoded version numbers and patch them here.
             {sed} -iE 's/^sdk-version:.*$/sdk-version: {sdk_version}/' $tmpdir/daml.yaml
-            # Daml-script replacement is now more complex, as it will be a regular dependency in the daml.yaml
-            # but to replace with the dar path, it must be converted to a data-dependency.
+            # Daml-script replacement is more complex as it must be a data-dependency when referenced 
+            # directly via it's dar, but in daml.yaml it is usually a regular dependency by name
+            # Therefore replacement logic must convert it to a data-dependency
             # We must also account for existing data-dependencies in the daml.yaml
             if grep -Rq '\\- daml-script$' $tmpdir/daml.yaml; then
                 {sed} -iE 's/- daml-script$//' $tmpdir/daml.yaml

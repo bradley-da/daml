@@ -19,6 +19,7 @@ import Data.NameMap qualified as NM
 import Data.Set qualified as S
 import Data.Text qualified as T
 import Data.Text.Extended (writeFileUtf8)
+import Safe (headNote)
 import System.Directory (copyFile, createDirectoryIfMissing)
 import System.FilePath (joinPath, takeDirectory, (<.>), (</>))
 import System.Info.Extra (isWindows)
@@ -236,8 +237,7 @@ makeStableDars darDirPath pkgs = withComponentVersions $ do
           ghcModuleNames = mkModuleName . T.unpack . moduleNameString <$> NM.names (packageModules mainPkg)
           pkgName = packageName $ packageMetadata mainPkg
           pkgVersion = packageVersion $ packageMetadata mainPkg
-          -- head is safe as all stable packages always have one module
-          mainModuleName = head $ NM.names $ packageModules mainPkg
+          mainModuleName = headNote "Found stable package with no modules" $ NM.names $ packageModules mainPkg
           confFile = mkConfFile pkgName (Just pkgVersion) (getPackageUnitId <$> depPackages) Nothing ghcModuleNames mainPkgId
 
       withDamlSourceFilePath mainModuleName $ \damlFilePath damlFileRoot -> do

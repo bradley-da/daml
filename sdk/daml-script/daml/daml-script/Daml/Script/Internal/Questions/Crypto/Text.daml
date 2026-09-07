@@ -25,7 +25,8 @@ instance SetField "publicKey" Secp256k1KeyPair PublicKeyHex where
 
 -- | MOVE Daml.Script
 -- A DER formatted private key to be used for ECDSA message signing
-type PrivateKeyHex = Text -- BytesHex
+type PrivateKeyHex = BytesHex
+
 
 -- | HIDE
 data Secp256k1WithEcdsaSign = Secp256k1WithEcdsaSign with

@@ -1503,7 +1503,7 @@ object ScriptF {
       commandName: String,
       version: Long,
       v: ExtendedValue,
-      @unused knownPackages: KnownPackages,
+      knownPackages: KnownPackages,
       env: Env,
   ): Either[String, Cmd] = {
     (commandName, version) match {

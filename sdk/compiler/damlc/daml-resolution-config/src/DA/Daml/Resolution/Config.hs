@@ -180,9 +180,8 @@ expandDependencyPackages cachePath pkgResolution lfVersion dependencyPackages = 
 -- list of data-dependencies to ensure their source code is available to the IDE. We look these up
 -- via their package-id to ensure we're only ever adding existing packages
 -- NOTE: this will bring the transitive deps into package-flag scope, such
--- that their modules can be imported directly. This is fine for daml-script and
--- most package setups, but could cause ambiguity issues with weird dar setups
--- when provided via dpm component imports.
+-- that their modules can be imported directly. This could cause ambiguity issues in niche cases
+-- See https://github.com/digital-asset/daml/issues/23344 for more detail
 addTransitiveDeps :: Map.Map FilePath (LF.PackageId, DalfInfoCacheEntry) -> [FilePath] -> IO [FilePath]
 addTransitiveDeps darInfos initialDeps = nubOrd <$> concatMapM addSingleTransitiveDep initialDeps
   where
