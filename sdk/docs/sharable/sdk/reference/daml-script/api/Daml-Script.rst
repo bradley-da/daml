@@ -1584,7 +1584,7 @@ Data Types
 .. _type-daml-script-internal-questions-crypto-text-privatekeyhex-82732:
 
 **type** `PrivateKeyHex <type-daml-script-internal-questions-crypto-text-privatekeyhex-82732_>`_
-  \= `Text <https://docs.digitalasset.com/build/3.4/reference/daml/stdlib/Prelude.html#type-ghc-types-text-51952>`_
+  \= `BytesHex <https://docs.digitalasset.com/build/3.4/reference/daml/stdlib/DA-Crypto-Text.html#type-da-crypto-text-byteshex-47880>`_
 
   A DER formatted private key to be used for ECDSA message signing
 

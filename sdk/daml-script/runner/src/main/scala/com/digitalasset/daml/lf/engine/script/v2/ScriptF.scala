@@ -39,7 +39,6 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.time.Clock
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
-import annotation.unused
 
 object ScriptF {
 
