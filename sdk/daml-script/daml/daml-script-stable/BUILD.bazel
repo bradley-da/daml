@@ -22,6 +22,7 @@ da_haskell_binary(
         "filepath",
         "ghc-lib-parser",
         "ghcide",
+        "safe",
         "text",
         "zip",
     ],

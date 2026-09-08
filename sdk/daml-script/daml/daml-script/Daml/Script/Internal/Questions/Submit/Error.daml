@@ -90,7 +90,9 @@ class IsTaggedRecord a where
 -- | HIDE
 -- Root IsTaggedRecord instance which types like AnySubmitError wrap via newtype deriving
 instance IsTaggedRecord TaggedRecord where
-  match name fields taggedRecord = guard (name == tgTag taggedRecord) *> mapA (flip Map.lookup $ tgData taggedRecord) fields
+  -- Check tag before doing lookups, as this method is checked often
+  match name fields taggedRecord | name == tgTag taggedRecord = mapA (flip Map.lookup $ tgData taggedRecord) fields
+  match name fields taggedRecord = None
   make name fields values = TaggedRecord name $ Map.fromList $ zip fields values
  
 -- | HIDE
@@ -661,10 +663,46 @@ instance IsSubmitError DevErrorSubmitError where
 data UnknownErrorSubmitError = UnknownErrorSubmitError with
   unknownErrorMessage : Text
 
+isKnownSubmitError : AnySubmitError -> Bool
+isKnownSubmitError (fromAnySubmitError @ContractNotFoundSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @UnsupportedContractIdSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @ContractKeyNotFoundSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @UnresolvedPackageNameSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @AuthorizationErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @ContractHashingErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @DisclosedContractKeyHashingErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @DuplicateContractKeySubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @InconsistentContractKeySubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @UnhandledExceptionSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @UserErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @TemplatePreconditionViolatedSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @CreateEmptyContractKeyMaintainersSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @FetchEmptyContractKeyMaintainersSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @WronglyTypedContractSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @ContractDoesNotImplementInterfaceSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @ContractDoesNotImplementRequiringInterfaceSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @NonComparableValuesSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @ContractIdInContractKeySubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @ContractIdComparabilitySubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @ValueNestingSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @LocalVerdictLockedContractsSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @LocalVerdictLockedKeysSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @UpgradeErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @FailureStatusErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @CryptoErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @ExternalCallErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @EffectfulRollbackErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @DevErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @UnknownErrorSubmitError -> Some _) = True
+isKnownSubmitError (fromAnySubmitError @TruncatedErrorSubmitError -> Some _) = True
+isKnownSubmitError _ = False
+
 -- | MOVE Daml.Script
 instance IsSubmitError UnknownErrorSubmitError where
   toAnySubmitError UnknownErrorSubmitError {..} = make "UnknownError" ["unknownErrorMessage"] [Cast unknownErrorMessage]
   fromAnySubmitError (match "UnknownError" ["unknownErrorMessage"] -> Some [Cast unknownErrorMessage]) = Some UnknownErrorSubmitError {..}
+  fromAnySubmitError submitError@(AnySubmitError tg) | not $ isKnownSubmitError submitError =
+    UnknownErrorSubmitError . fromLedgerValue <$> Map.lookup "originalMessage" (tgData tg)
   fromAnySubmitError _ = None
 
 -- | MOVE Daml.Script
