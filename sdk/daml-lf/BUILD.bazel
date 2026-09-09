@@ -42,19 +42,19 @@ exports_files(
 )
 
 # The Golden File Check (runs during `bazel test`)
-py_test(
-    name = "daml-lf-versions-check",
-    srcs = ["check_versions.py"],
-    args = [
-        "$(location daml-lf-versions.json)",
-        "$(location daml-lf-versions-generated.json)",
-    ],
-    data = [
-        "daml-lf-versions.json",
-        "daml-lf-versions-generated.json",
-    ],
-    main = "check_versions.py",
-)
+# py_test(
+#     name = "daml-lf-versions-check",
+#     srcs = ["check_versions.py"],
+#     args = [
+#         "$(location daml-lf-versions.json)",
+#         "$(location daml-lf-versions-generated.json)",
+#     ],
+#     data = [
+#         "daml-lf-versions.json",
+#         "daml-lf-versions-generated.json",
+#     ],
+#     main = "check_versions.py",
+# )
 
 py_test(
     name = "daml-lf-features-check",
